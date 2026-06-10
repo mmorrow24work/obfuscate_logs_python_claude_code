@@ -50,6 +50,16 @@ I don't have access to the exact token counter for this session, but I can give 
 
 Rough estimate for this session
 
+
+| Segment | Approx tokens |
+| --- | --- |
+| Prior session summary (loaded at start) | ~4,000 |
+| All file reads (PROJECT.md × 2, QUICKSTART.md × 2, source files, etc.) | ~15,000 |
+| All file writes (5 new files in new repo, edits across 4 repos) | ~12,000 |
+| Bash output (git, test runs, verification) | ~3,000 |
+| Your messages + my responses | ~6,000 |
+| **Estimated total** | **~40,000 input + ~15,000 output** |
+
 ┌────────────────────────────────────────────────────────────────────────┬────────────────────────────────┐
 │                                Segment                                 │         Approx tokens          │
 ├────────────────────────────────────────────────────────────────────────┼────────────────────────────────┤
