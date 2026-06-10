@@ -7,9 +7,9 @@
 - The zip and log filename might include hostnames - these must also be obfuscated
 - The output from the python script should be :
 
-a. a new zip file containing the logs after they are obfuscated - do not leak the hostname in the output zip and log filename
-b. a text file detailing the obfuscation encode which translates the original data to the new data in case we need to reference the obfuscated IP's
-c. a text file detailing the obfuscation decode which translates the obfuscated data to the original data in case we need to reference the obfuscated IP's
+- i. a new zip file containing the logs after they are obfuscated - do not leak the hostname in the output zip and log filename
+- ii. a text file detailing the obfuscation encode which translates the original data to the new data in case we need to reference the obfuscated IP's
+- iii. a text file detailing the obfuscation decode which translates the obfuscated data to the original data in case we need to reference the obfuscated IP's
 
 4. Create a python script to generate test log files with an input switch to define logfile size
 5. Create a Code Walkthrough markup document for both python scripts that clearly explain the code for future maintenance
