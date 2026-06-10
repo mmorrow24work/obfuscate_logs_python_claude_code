@@ -112,3 +112,73 @@ Biggest single win: keep sessions focused on one repo/task and use /compact when
 
 ✻ Sautéed for 35s
 
+
+---
+
+
+Token Usage Estimate
+
+┌────────────────────────────────────────────────────────────────────────┬────────────────────────────────┐
+│                                Segment                                 │         Approx tokens          │
+├────────────────────────────────────────────────────────────────────────┼────────────────────────────────┤
+│ Prior session summary (loaded at start)                                │ ~4,000                         │
+├────────────────────────────────────────────────────────────────────────┼────────────────────────────────┤
+│ All file reads (PROJECT.md × 2, QUICKSTART.md × 2, source files, etc.) │ ~15,000                        │
+├────────────────────────────────────────────────────────────────────────┼────────────────────────────────┤
+│ All file writes (5 new files in new repo, edits across 4 repos)        │ ~12,000                        │
+├────────────────────────────────────────────────────────────────────────┼────────────────────────────────┤
+│ Bash output (git, test runs, verification)                             │ ~3,000                         │
+├────────────────────────────────────────────────────────────────────────┼────────────────────────────────┤
+│ Your messages + my responses                                           │ ~6,000                         │
+├────────────────────────────────────────────────────────────────────────┼────────────────────────────────┤
+│ Estimated total                                                        │ ~40,000 input + ~15,000 output │
+└────────────────────────────────────────────────────────────────────────┴────────────────────────────────┘
+
+At current Sonnet 4.6 pricing (~$3/$15 per MTok in/out) this session cost roughly $0.35–0.50. The prior session (which ran to context limit and was summarised) was likely similar or larger.
+
+---
+How to Optimise in Future
+
+1. Use /compact before switching topics mid-session
+
+When one task is done and you're starting another, run /compact first. It compresses earlier turns into a summary, freeing context for new work. This session already hit the limit once — compacting earlier would have given more room.
+
+2. Break large tasks across separate sessions
+
+Each new claude invocation starts fresh. For genuinely independent tasks (the new obfuscate_logs repo had nothing to do with nautobot-input), starting a new session avoids carrying all prior context as dead weight.
+
+3. Be specific when reading files
+
+Instead of:
+
+▎ "review both side by side and align them"
+
+Try:
+
+▎ "read PROJECT.md in both repos and tell me what sections are in netbox but missing from nautobot"
+
+Targeted reads with offset/limit cost far less than reading full files. The full walkthrough of two QUICKSTART.md files and two PROJECT.md files in one go was expensive.
+
+4. Use CLAUDE.md to avoid re-deriving context
+
+The credentials, port differences, folder structure, and pipeline behaviour were all re-read from files each session. A CLAUDE.md in the repo root with the key facts (Nautobot API quirks, credential locations, python3 -m src.main invocation) means file reads can be skipped.
+
+5. Keep the memory system lean
+
+The MEMORY.md file is loaded into every session. Currently it's short and useful — keep it that way. Don't save code patterns or architecture details there; those belong in CLAUDE.md where they're co-located with the code.
+
+6. Spawn subagents for isolated research
+
+For large open-ended investigations such as "audit the whole repo for NetBox references", spawning an Explore subagent keeps the findings out of the main context — you get the answer without filling your context window with raw search results.
+
+7. Skip plan mode for well-scoped tasks
+
+The EnterPlanMode → clarify → ExitPlanMode flow added ~3,000 tokens today. For tasks you've already thought through in detail, you can say "no plan mode needed, go ahead" to skip it.
+
+---
+Biggest Single Win
+
+Keep sessions focused on one repo or task and use /compact when pivoting. The context growth in this session came from reading four repos' worth of files while carrying the full history of earlier edits in the same window.
+
+✻ Cooked for 20s
+
