@@ -13,3 +13,20 @@
 4. Create a python script to generate test log files with an input switch to define logfile size
 5. Create a Code Walkthrough markup document for both python scripts that clearly explain the code for future maintenance
 6. Before creating any code, enter plan mode
+
+
+---
+
+1. Create a repo
+2. Create `README.md` to capture objectives and usage examples
+3. Create an obfuscation script
+   - Input: a zip containing thousands of log files
+   - Log format: IPv4 (e.g. `192.168.1.1`) and CIDR (e.g. `192.168.1.1/24`)
+   - Zip and log filenames may contain hostnames — must also be obfuscated
+   - Output:
+     - i. Obfuscated zip — no hostname leakage in zip or log filenames
+     - ii. Encode map — original → obfuscated
+     - iii. Decode map — obfuscated → original
+4. Create a test log generator with `--size` input switch
+5. Create a Code Walkthrough document for both scripts
+6. Enter plan mode before writing any code
