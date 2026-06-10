@@ -1,4 +1,4 @@
-Ask supplied to 
+Ask supplied to https://claude.ai/ - using claude_code
 
 1. Create a repo called https://github.com/mmorrow24work/obfuscate_logs_python_claude_code
 2. Create README.md to capture objectives, and examples of how to use the python scripts
