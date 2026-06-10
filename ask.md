@@ -45,3 +45,70 @@ Bug caught during verification: The FQDN regex originally used \b (word boundary
 
 ---
 
+
+I don't have access to the exact token counter for this session, but I can give you a realistic estimate and concrete optimization strategies.
+
+Rough estimate for this session
+
+┌────────────────────────────────────────────────────────────────────────┬────────────────────────────────┐
+│                                Segment                                 │         Approx tokens          │
+├────────────────────────────────────────────────────────────────────────┼────────────────────────────────┤
+│ Prior session summary (loaded at start)                                │ ~4,000                         │
+├────────────────────────────────────────────────────────────────────────┼────────────────────────────────┤
+│ All file reads (PROJECT.md × 2, QUICKSTART.md × 2, source files, etc.) │ ~15,000                        │
+├────────────────────────────────────────────────────────────────────────┼────────────────────────────────┤
+│ All file writes (5 new files in new repo, edits across 4 repos)        │ ~12,000                        │
+├────────────────────────────────────────────────────────────────────────┼────────────────────────────────┤
+│ Bash output (git, test runs, verification)                             │ ~3,000                         │
+├────────────────────────────────────────────────────────────────────────┼────────────────────────────────┤
+│ Your messages + my responses                                           │ ~6,000                         │
+├────────────────────────────────────────────────────────────────────────┼────────────────────────────────┤
+│ Estimated total                                                        │ ~40,000 input + ~15,000 output │
+└────────────────────────────────────────────────────────────────────────┴────────────────────────────────┘
+
+At current Sonnet 4.6 pricing (~$3/$15 per MTok in/out) that's roughly $0.35–0.50 for this session. The prior session (which ran to context limit and got summarized) was likely similar or larger.
+
+---
+How to optimize in future
+
+1. Use /compact before switching topics mid-session
+
+When one task is done and you're starting another (e.g., going from "fix cleanup commands" to "create new repo"), run /compact first. It compresses earlier turns into a summary, freeing context for the new work. This session already hit the limit once — compacting earlier would have given more room.
+
+2. Break large tasks across separate sessions
+
+Each new claude invocation starts fresh. For genuinely independent tasks (the new obfuscate_logs repo had nothing to do with nautobot-input), starting a new session avoids carrying all the prior context as dead weight.
+
+3. Be specific when reading files
+
+Instead of:
+
+▎ "review both side by side and align them"
+
+Try:
+
+▎ "read PROJECT.md in both repos and tell me what sections are in netbox but missing from nautobot"
+
+Targeted reads (Read with offset/limit) cost far less than reading full files. The full walkthrough of two QUICKSTART.md files + two PROJECT.md files in one go was expensive.
+
+4. Use CLAUDE.md to avoid re-deriving context
+
+The credentials, port differences, folder structure, and pipeline behaviour were all re-read from files each session. A CLAUDE.md in the repo root with the key facts (Nautobot API quirks, credential locations, python3 -m src.main invocation) means I can skip many file reads.
+
+5. Keep the memory system lean
+
+The memory file I maintain (MEMORY.md) is loaded into every session. Currently it's short and useful — keep it that way. Don't ask me to save code patterns or architecture details there; those belong in CLAUDE.md where they're co-located with the code.
+
+6. Spawn subagents for isolated research
+
+For the plan mode exploration, I did all the research inline. For large open-ended investigations ("audit the whole repo for NetBox references"), spawning an Explore subagent keeps the findings out of the main context — you get the answer without filling your context window with raw search results.
+
+7. The plan mode overhead
+
+The EnterPlanMode → clarify → ExitPlanMode flow added overhead today (~3,000 tokens just for the back-and-forth). For well-scoped tasks you've already thought through, you can skip it by just saying "no plan mode needed, go ahead".
+
+---
+Biggest single win: keep sessions focused on one repo/task and use /compact when pivoting. The context explosion today came from reading 4 repos' worth of files while carrying forward the full history of earlier edits in the same session.
+
+✻ Sautéed for 35s
+
